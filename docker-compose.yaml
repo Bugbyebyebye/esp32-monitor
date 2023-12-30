@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  esp32_server:
+    build: .
+    image: esp32
+    container_name:  esp32_server
+    ports:
+      - "5000:5000"
+      - "9090:9090"
+    volumes:
+      - /opt/esp32_data:/opt/esp32/data
