@@ -74,7 +74,7 @@ def endSaveVideoAndConvert():
         print('结束保存avi视频')
 
         # 调用FFmpeg将avi转换为h264 mp4格
-        ffmpeg_command = " ffmpeg -i ./video/video.api -vcodec h264 ./video/video.mp4"
+        ffmpeg_command = " ffmpeg -i ./video/video.avi -vcodec h264 ./video/video.mp4"
         try:
             subprocess.check_call(ffmpeg_command, shell=True)
             print("视频已成功转换")
