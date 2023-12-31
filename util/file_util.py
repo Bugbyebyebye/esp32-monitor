@@ -1,4 +1,4 @@
-from qiniu import Auth, put_data, put_file
+from qiniu import Auth, put_file
 import uuid
 
 access_key = '89VRcOeJLPI3HAuf_lbdT0qU6KrazC7_KdtCZsxT'

@@ -11,7 +11,7 @@ s.bind(("0.0.0.0", 9090))
 print("running in 0.0.0.0:9090")
 
 # 视频存储格式
-video_type = cv2.VideoWriter.fourcc('H', '2', '6', '4')
+video_type = cv2.VideoWriter.fourcc('a', 'v', 'c', '1')
 # 保存的位置
 video_flag = False
 image_flag = False

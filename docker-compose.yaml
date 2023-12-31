@@ -6,6 +6,6 @@ services:
     container_name:  esp32_server
     ports:
       - "5000:5000"
-      - "9090:9090"
+      - "9090:9090/udp"
     volumes:
       - /opt/esp32_data:/opt/esp32/data

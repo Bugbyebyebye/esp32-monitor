@@ -7,6 +7,9 @@ RUN apt-get update
 RUN apt-get install -y python3.9 python3-pip
 RUN apt-get install -y pkg-config
 RUN apt-get install -y libmysqlclient-dev
+RUN apt-get install -y libgl1-mesa-glx
+RUN apt-get install -y ffmpeg
+RUN apt-get install -y libx264-dev
 RUN pip3 install --upgrade pip
 RUN pip3 install -r requirements.txt
 
