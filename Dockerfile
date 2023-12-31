@@ -11,7 +11,8 @@ RUN apt-get install -y libgl1-mesa-glx
 RUN apt-get install -y ffmpeg
 RUN apt-get install -y libx264-dev
 RUN pip3 install --upgrade pip
-RUN pip3 install -r requirements.txt
+RUN pip3 config set global.index-url https://mirrors.aliyun.com/pypi/simple/
+RUN pip3 install -r requirements.txt --trusted-host mirrors.aliyun.com
 
 ENV PYTHONPATH=/opt/esp32
 
