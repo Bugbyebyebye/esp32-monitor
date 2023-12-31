@@ -1,5 +1,5 @@
 import socket
-
+import subprocess
 import cv2
 import numpy as np
 from flask import Response, jsonify
@@ -10,13 +10,13 @@ s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind(("0.0.0.0", 9090))
 print("running in 0.0.0.0:9090")
 
-# 视频存储格式
-video_type = cv2.VideoWriter.fourcc('a', 'v', 'c', '1')
-# 保存的位置
+# 视频存储信息
+video_type_avi = cv2.VideoWriter.fourcc('X','V','I','D')  # 使用XVID编码器创建avi文件
 video_flag = False
 image_flag = False
 video_name = None
 image_name = None
+avi_file = None
 
 
 # 向前端输送视频
@@ -39,9 +39,8 @@ def video_feed():
                     cv2.imwrite(filename, img)
                     image_flag = False
 
-                # 保存视频
-                if video_flag:
-                    print('正在保存视频...')
+                # 保存视频到avi文件
+                if video_flag and avi_file is not None:
                     avi_file.write(img)
 
                 yield (b'--frame\r\n'
@@ -53,26 +52,38 @@ def video_feed():
     return Response(generate(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
-# 开始录制视频
+# 开始录制视频到avi文件
 @app.route("/video_start")
 def startSaveVideo():
     global video_flag, video_name, avi_file
     video_name = "video"
-    avi_file = cv2.VideoWriter(f'./video/{video_name}.mp4', video_type, 5, (480, 320))
-    print('开始保存视频')
+    avi_file = cv2.VideoWriter(f'./video/{video_name}.avi', video_type_avi, 5, (480, 320))
+    print('开始保存视频到.avi文件')
     video_flag = True
     return jsonify({'code': 200, "message": "开始保存视频"})
 
 
-# 结束录制视频
+# 结束录制视频并调用FFmpeg进行转码
 @app.route("/video_end")
-def endSaveVideo():
-    global video_flag
-    print('结束保存视频')
-    video_flag = False
-    avi_file.release()
+def endSaveVideoAndConvert():
+    global video_flag, avi_file, video_name
+    if video_flag and avi_file is not None:
+        avi_file.release()
+        avi_file = None
+        video_flag = False
+        print('结束保存avi视频')
 
-    return jsonify({'code': 200, "message": "视频保存成功", "video_name": video_name})
+        # 调用FFmpeg将avi转换为h264 mp4格
+        ffmpeg_command = " ffmpeg -i ./video/video.api -vcodec h264 ./video/video.mp4"
+        try:
+            subprocess.check_call(ffmpeg_command, shell=True)
+            print("视频已成功转换")
+            return jsonify({'code': 200, "message": "视频保存并转换成功", "video_name": "video.mp4"})
+        except subprocess.CalledProcessError as e:
+            print(f"FFmpeg转换错误: {e}")
+            return jsonify({'code': 500, "message": "视频转换失败，请检查FFmpeg是否正确安装或配置"})
+    else:
+        return jsonify({'code': 400, "message": "未在录制状态，无法完成转换"})
 
 
 # 截图
